@@ -1,8 +1,21 @@
+input.onButtonPressed(Button.A, function () {
+    if (colourSetting == 5) {
+        colourSetting = 0
+    } else {
+        colourSetting += 1
+    }
+})
 let soilHue = 0
 let humidHue = 0
 let tempHue = 0
+let colourSetting = 0
 let zipLED = kitronik_smart_greenhouse.createGreenhouseZIPDisplay(8)
 let statusLEDs = zipLED.statusLedsRange()
+let zipLEDs = kitronik_smart_greenhouse.createGreenhouseZIPDisplay(8)
+let zipStick = zipLEDs.zipStickRange()
+colourSetting = 0
+let brightness = 128
+zipLEDs.setBrightness(brightness)
 basic.forever(function () {
     tempHue = Math.map(kitronik_smart_greenhouse.temperature(TemperatureUnitList.C), 0, 40, 210, 0)
     humidHue = Math.map(kitronik_smart_greenhouse.humidity(), 0, 100, 35, 150)
@@ -28,19 +41,6 @@ basic.forever(function () {
     basic.showNumber(kitronik_smart_greenhouse.humidity())
     basic.showNumber(kitronik_smart_greenhouse.readIOPin(kitronik_smart_greenhouse.PinType.analog, kitronik_smart_greenhouse.IOPins.p1))
 })
-input.onButtonPressed(Button.A, function () {
-    if (colourSetting == 5) {
-        colourSetting = 0
-    } else {
-        colourSetting += 1
-    }
-})
-let colourSetting = 0
-let zipLEDs = kitronik_smart_greenhouse.createGreenhouseZIPDisplay(8)
-let zipStick = zipLEDs.zipStickRange()
-colourSetting = 0
-let brightness = 128
-zipLEDs.setBrightness(brightness)
 basic.forever(function () {
     zipStick.setBrightness(brightness)
     zipStick.show()
