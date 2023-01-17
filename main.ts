@@ -29,7 +29,11 @@ basic.forever(function () {
     basic.showNumber(input.lightLevel())
 })
 basic.forever(function () {
-    zipStick.setBrightness(brightness)
+    if (input.lightLevel() < 5) {
+        zipStick.setBrightness(45)
+    } else {
+        zipStick.setBrightness(0)
+    }
     zipStick.show()
     if (colourSetting == 0) {
         zipStick.showColor(kitronik_smart_greenhouse.colors(ZipLedColors.White))
@@ -58,9 +62,5 @@ basic.forever(function () {
     basic.pause(10000)
 })
 basic.forever(function () {
-    if (input.lightLevel() < 5) {
-        zipLEDs.setBrightness(45)
-    } else {
-        zipLEDs.setBrightness(0)
-    }
+	
 })
