@@ -9,9 +9,9 @@ let soilHue = 0
 let humidHue = 0
 let tempHue = 0
 let colourSetting = 0
-let zipLED = kitronik_smart_greenhouse.createGreenhouseZIPDisplay(8)
-let statusLEDs = zipLED.statusLedsRange()
 let zipLEDs = kitronik_smart_greenhouse.createGreenhouseZIPDisplay(8)
+let statusLEDs = zipLEDs.statusLedsRange()
+zipLEDs = kitronik_smart_greenhouse.createGreenhouseZIPDisplay(8)
 let zipStick = zipLEDs.zipStickRange()
 colourSetting = 0
 let brightness = 128
@@ -24,22 +24,9 @@ basic.forever(function () {
     statusLEDs.setZipLedColor(1, kitronik_smart_greenhouse.hueToRGB(humidHue))
     statusLEDs.setZipLedColor(2, kitronik_smart_greenhouse.hueToRGB(soilHue))
     statusLEDs.show()
-    if (kitronik_smart_greenhouse.readIOPin(kitronik_smart_greenhouse.PinType.analog, kitronik_smart_greenhouse.IOPins.p1) <= 400) {
-        for (let index = 0; index < 3; index++) {
-            kitronik_smart_greenhouse.controlHighPowerPin(kitronik_smart_greenhouse.HighPowerPins.pin13, kitronik_smart_greenhouse.onOff(true))
-            basic.pause(1000)
-            kitronik_smart_greenhouse.controlHighPowerPin(kitronik_smart_greenhouse.HighPowerPins.pin13, kitronik_smart_greenhouse.onOff(false))
-            basic.pause(1000)
-        }
-    } else {
-        basic.showIcon(IconNames.Happy)
-    }
-    basic.pause(10000)
 })
 basic.forever(function () {
-    basic.showNumber(kitronik_smart_greenhouse.temperature(TemperatureUnitList.C))
-    basic.showNumber(kitronik_smart_greenhouse.humidity())
-    basic.showNumber(kitronik_smart_greenhouse.readIOPin(kitronik_smart_greenhouse.PinType.analog, kitronik_smart_greenhouse.IOPins.p1))
+    basic.showNumber(input.lightLevel())
 })
 basic.forever(function () {
     zipStick.setBrightness(brightness)
@@ -60,14 +47,20 @@ basic.forever(function () {
     }
 })
 basic.forever(function () {
-    if (brightness <= 0) {
-        brightness = 0
-    } else {
-        brightness += -16
+    if (kitronik_smart_greenhouse.readIOPin(kitronik_smart_greenhouse.PinType.analog, kitronik_smart_greenhouse.IOPins.p1) <= 200) {
+        for (let index = 0; index < 2; index++) {
+            kitronik_smart_greenhouse.controlHighPowerPin(kitronik_smart_greenhouse.HighPowerPins.pin13, kitronik_smart_greenhouse.onOff(true))
+            basic.pause(1000)
+            kitronik_smart_greenhouse.controlHighPowerPin(kitronik_smart_greenhouse.HighPowerPins.pin13, kitronik_smart_greenhouse.onOff(false))
+            basic.pause(1000)
+        }
     }
-    if (brightness >= 255) {
-        brightness = 255
+    basic.pause(10000)
+})
+basic.forever(function () {
+    if (input.lightLevel() < 5) {
+        zipLEDs.setBrightness(45)
     } else {
-        brightness += 16
+        zipLEDs.setBrightness(0)
     }
 })
