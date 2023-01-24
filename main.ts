@@ -5,6 +5,7 @@ input.onButtonPressed(Button.A, function () {
         colourSetting += 1
     }
 })
+let waterEmpty = false
 let soilHue = 0
 let humidHue = 0
 let tempHue = 0
@@ -27,6 +28,20 @@ basic.forever(function () {
 })
 basic.forever(function () {
     basic.showNumber(input.lightLevel())
+    basic.showNumber(kitronik_smart_greenhouse.temperature(TemperatureUnitList.C))
+    basic.showNumber(kitronik_smart_greenhouse.humidity())
+    basic.showNumber(kitronik_smart_greenhouse.readIOPin(kitronik_smart_greenhouse.PinType.analog, kitronik_smart_greenhouse.IOPins.p1))
+})
+basic.forever(function () {
+    if (kitronik_smart_greenhouse.readIOPin(kitronik_smart_greenhouse.PinType.analog, kitronik_smart_greenhouse.IOPins.p1) <= 40) {
+        kitronik_smart_greenhouse.controlHighPowerPin(kitronik_smart_greenhouse.HighPowerPins.pin13, kitronik_smart_greenhouse.onOff(true))
+        basic.pause(1000)
+        kitronik_smart_greenhouse.controlHighPowerPin(kitronik_smart_greenhouse.HighPowerPins.pin13, kitronik_smart_greenhouse.onOff(false))
+        basic.pause(1000)
+    } else {
+        kitronik_smart_greenhouse.controlHighPowerPin(kitronik_smart_greenhouse.HighPowerPins.pin13, kitronik_smart_greenhouse.onOff(false))
+    }
+    basic.pause(1000)
 })
 basic.forever(function () {
     if (input.lightLevel() < 5) {
@@ -51,16 +66,11 @@ basic.forever(function () {
     }
 })
 basic.forever(function () {
-    if (kitronik_smart_greenhouse.readIOPin(kitronik_smart_greenhouse.PinType.analog, kitronik_smart_greenhouse.IOPins.p1) <= 200) {
-        for (let index = 0; index < 2; index++) {
-            kitronik_smart_greenhouse.controlHighPowerPin(kitronik_smart_greenhouse.HighPowerPins.pin13, kitronik_smart_greenhouse.onOff(true))
-            basic.pause(1000)
-            kitronik_smart_greenhouse.controlHighPowerPin(kitronik_smart_greenhouse.HighPowerPins.pin13, kitronik_smart_greenhouse.onOff(false))
-            basic.pause(1000)
-        }
+    if (kitronik_smart_greenhouse.readIOPin(kitronik_smart_greenhouse.PinType.analog, kitronik_smart_greenhouse.IOPins.p1) < 30) {
+        waterEmpty = true
+        music.playSoundEffect(music.builtinSoundEffect(soundExpression.spring), SoundExpressionPlayMode.UntilDone)
+        basic.pause(1000)
+    } else {
+        waterEmpty = false
     }
-    basic.pause(10000)
-})
-basic.forever(function () {
-	
 })
